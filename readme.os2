@@ -1,0 +1,15 @@
+The OS/2 version supports HPFS long file names (but not extended
+attibutes). New files are:
+
+patches.os2		context diffs for OS/2 version
+makefile.os2		makefile for NMAKE of MS C 6.00
+zoo.def			linker definition file
+fiz.def			"
+zoo.cs			compiler shell scripts
+fiz.cs			"
+addbfmsc.c		crc module for MS C 6.00 with inline assembly
+msc.c			MS C 6.00 specific module
+os2.c			OS/2 specific module
+
+Kai Uwe Rommel
+rommel@informatik.tu-muenchen.de

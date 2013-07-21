@@ -1,0 +1,267 @@
+Only in new: patches.os2
+Only in new: makefile.os2
+Only in new: zoo.cs
+Only in new: zoo.def
+Only in new: fiz.cs
+Only in new: fiz.def
+Only in new: addbfmsc.c
+Only in new: msc.c
+Only in new: os2.c
+diff -cbBw orig/crcdefs.c new/crcdefs.c
+*** orig/crcdefs.c	Thu Jul 11 12:03:46 1991
+--- new/crcdefs.c	Sun Jul 14 19:47:44 1991
+***************
+*** 11,17 ****
+                                    -- Rahul Dhesi 1987/08/27
+  */
+  
+! unsigned int crccode;
+  unsigned int crctab[] = {
+     0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
+  	0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440,
+--- 11,17 ----
+                                    -- Rahul Dhesi 1987/08/27
+  */
+  
+! unsigned int crccode = 0;
+  unsigned int crctab[] = {
+     0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
+  	0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440,
+diff -cbBw orig/fiz.c new/fiz.c
+*** orig/fiz.c	Thu Jul 11 12:06:30 1991
+--- new/fiz.c	Sun Jul 14 21:42:50 1991
+***************
+*** 33,40 ****
+     int state;              /* to keep track of how much of tag seen */
+     int inch;               /* char just read from archive */
+  
+!    static char usage1[] = "Fiz 2.0 (1987/02/01) public domain Zoo archive repair utility by Rahul Dhesi\n";
+!    static char usage2[] = "Usage:  fiz archive[.zoo]  (\"fiz -h\" for help)\n";
+  
+  #ifdef SETBUF
+  /* set stdout to unbuffered */
+--- 33,40 ----
+     int state;              /* to keep track of how much of tag seen */
+     int inch;               /* char just read from archive */
+  
+!    static char usage1[] = "\nFiz 2.0 (1987/02/01) public domain Zoo archive repair utility by Rahul Dhesi\n";
+!    static char usage2[] = "\nUsage:  fiz archive[.zoo]  (\"fiz -h\" for help)\n";
+  
+  #ifdef SETBUF
+  /* set stdout to unbuffered */
+***************
+*** 161,167 ****
+  To remove printf:
+  :s/^printf("\(.*\)\\n");/\1/
+  */
+! printf("Fiz is used to help you recover data from a damaged archive.  Fiz searches\n");
+  printf("the specified archive for directory entries and stored files, and prints the\n");
+  printf("position of each one found.  Each directory entry contains a number that\n");
+  printf("represents the location in the archive where the file is stored;  fiz also\n");
+--- 161,167 ----
+  To remove printf:
+  :s/^printf("\(.*\)\\n");/\1/
+  */
+! printf("\nFiz is used to help you recover data from a damaged archive.  Fiz searches\n");
+  printf("the specified archive for directory entries and stored files, and prints the\n");
+  printf("position of each one found.  Each directory entry contains a number that\n");
+  printf("represents the location in the archive where the file is stored;  fiz also\n");
+diff -cbBw orig/lzd.c new/lzd.c
+*** orig/lzd.c	Thu Jul 11 12:04:04 1991
+--- new/lzd.c	Sun Jul 14 20:38:40 1991
+***************
+*** 66,74 ****
+  /* wr_dchar() is a macro for speed */
+  #define wr_dchar(c) {                             \
+                             if (outbufp<outbuflim) \
+!                               *outbufp++=(c);     \
+                             else                   \
+!                               xwr_dchar(c);       \
+                      }
+  
+  extern char *out_buf_adr;        /* output buffer */
+--- 66,74 ----
+  /* wr_dchar() is a macro for speed */
+  #define wr_dchar(c) {                             \
+                             if (outbufp<outbuflim) \
+!                               *outbufp++=(char)(c);     \
+                             else                   \
+!                               xwr_dchar((char)c);       \
+                      }
+  
+  extern char *out_buf_adr;        /* output buffer */
+diff -cbBw orig/machine.c new/machine.c
+*** orig/machine.c	Thu Jul 11 12:04:06 1991
+--- new/machine.c	Sun Jul 14 18:32:22 1991
+***************
+*** 69,75 ****
+  #endif
+  
+  #ifdef MSC
+! #include "ERROR -- NOT SUPPORTED"
+  #endif
+  
+  #ifdef TURBOC
+--- 69,75 ----
+  #endif
+  
+  #ifdef MSC
+! #include "msc.c"
+  #endif
+  
+  #ifdef TURBOC
+diff -cbBw orig/nextfile.c new/nextfile.c
+*** orig/nextfile.c	Thu Jul 11 12:04:18 1991
+--- new/nextfile.c	Sun Jul 14 18:49:58 1991
+***************
+*** 54,59 ****
+--- 54,61 ----
+  #else
+  /* if not PORTABLE  then */
+  
++ #ifndef OS2 /* the OS/2 version sits in os2.c to cleanly separate all
++                OS-dependent code in one module */
+  #include <dir.h>
+  #include <dos.h>
+  #include "assert.h"     /* macro definition:  assert() macro            */
+***************
+*** 203,205 ****
+--- 205,208 ----
+     new_path[start_pos+13] = '\0';
+  }
+  #endif /* PORTABLE */
++ #endif /* OS2 */
+diff -cbBw orig/options.h new/options.h
+*** orig/options.h	Thu Jul 11 12:04:22 1991
+--- new/options.h	Sun Jul 14 20:33:00 1991
+***************
+*** 234,239 ****
+--- 234,289 ----
+  #endif
+  
+  /***********************************************************************/
++ /* Microsoft C 6.00 for MS-DOS and OS/2                                */
++ /***********************************************************************/
++ 
++ #ifdef MSC
++ #undef PORTABLE
++ #define FILTER
++ #define NEEDCTYP
++ #define MEMSET
++ #define ANSI_HDRS
++ #define USE_ASCII
++ #define SPECINIT
++ #define SPECEXIT
++ #define PURIFY
++ #define DISK_CH ':'
++ #define IGNORECASE
++ #define WILDCARD "*.*"
++ #ifndef OS2
++ #define FOLD
++ #endif
++ #define FORCESLASH
++ #define FNLIMIT 256
++ #define CUR_DIR "."
++ #define PATH_SEP ":/\\"
++ #define EXT_SEP  ":/\\."
++ #define SETMODE
++ #define MODE_BIN(f)      setmode(fileno(f), 0x8000)
++ #define MODE_TEXT(f)     setmode(fileno(f), 0x4000)
++ #define NEED_STDIO
++ #define ANSI_PROTO
++ #define VOIDPTR		void *
++ #define REN_STDC
++ #define STDARG
++ #define T_UINT16		unsigned short		/* must be 16 bit unsigned */
++ /* #define UNBUF_IO */
++ /* #define UNBUF_LIMIT	512 */
++ #define  T_SIGNAL void
++ #define DIRECT_CONVERT
++ #define STDARG
++ #define CHECK_BREAK
++ #define check_break kbhit
++ #define HAVE_ISATTY
++ #ifdef  PORTABLE		/* for testing only */
++ # define SPECNEXT
++ # define NIXTIME
++ # undef  WILDCARD
++ #endif
++ #define FPUTCHAR
++ #endif /* MSC */
++ 
++ /***********************************************************************/
+  /* GENERIC **IX SYSTEM -- GOOD STARTING POINT FOR YOURS                */
+  /***********************************************************************/
+  
+diff -cbBw orig/zoo.c new/zoo.c
+*** orig/zoo.c	Thu Jul 11 12:04:44 1991
+--- new/zoo.c	Sun Jul 14 19:48:46 1991
+***************
+*** 34,41 ****
+  
+  int instr PARMS ((char *, char *));
+  
+! char *out_buf_adr;      /* points to memory allocated for output buffer(s) */
+! char *in_buf_adr;       /* points to memory allocated for input buffer */
+  
+  /* static declarations */
+  int quiet = 0;             /* whether to be quiet */
+--- 34,41 ----
+  
+  int instr PARMS ((char *, char *));
+  
+! char *out_buf_adr = NULL;      /* points to memory allocated for output buffer(s) */
+! char *in_buf_adr = NULL;       /* points to memory allocated for input buffer */
+  
+  /* static declarations */
+  int quiet = 0;             /* whether to be quiet */
+***************
+*** 56,62 ****
+  #ifdef OOZ
+  #else
+  /* else not OOZ */
+!       static char usage[] = "Usage: zoo {acDeglLPTuUvx}[aAcCdEfInmMNoOpPqu1:/.@n] archive file\n(\"zoo h\" for help, \"zoo H\" for extended help)\n";
+        static char nov_usage[] =
+            "\nNovice usage:  zoo -cmd archive[.zoo] file...  where -cmd is one of these:\n";
+        char *option;
+--- 56,62 ----
+  #ifdef OOZ
+  #else
+  /* else not OOZ */
+!       static char usage[] = "\nUsage: zoo {acDeglLPTuUvx}[aAcCdEfInmMNoOpPqu1:/.@n] archive file\n(\"zoo h\" for help, \"zoo H\" for extended help)\n";
+        static char nov_usage[] =
+            "\nNovice usage:  zoo -cmd archive[.zoo] file...  where -cmd is one of these:\n";
+        char *option;
+***************
+*** 276,282 ****
+  
+  /* usage list including Novice commands */
+  show_usage:
+!    fprintf (stderr, "%s\n\n%s%s%s", version, usage, nov_usage, nov_cmds);
+  	zooexit (1);
+  
+  /* brief usage list */
+--- 276,284 ----
+  
+  /* usage list including Novice commands */
+  show_usage:
+!    printf ("\nZoo archiver, %s\n", version);
+!    printf ("(C) Copyright 1988 Rahul Dhesi -- Noncommercial use permitted\n");
+!    printf ("%s%s%s", usage, nov_usage, nov_cmds);
+  	zooexit (1);
+  
+  /* brief usage list */
+diff -cbBw orig/zoofilt.c new/zoofilt.c
+*** orig/zoofilt.c	Thu Jul 11 12:04:56 1991
+--- new/zoofilt.c	Sun Jul 14 20:46:40 1991
+***************
+*** 54,59 ****
+--- 54,61 ----
+                  }
+  	}
+  
++         MODE_BIN(stdin);
++         MODE_BIN(stdout);
+  	crccode = 0;	/* needed whether compressing or uncompressing */
+  
+  	switch (choice) {

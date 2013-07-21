@@ -1,0 +1,89 @@
+# $Source: /usr/home/dhesi/zoo/RCS/makefile.os2,v $
+# $Id: makefile.os2,v 1.6 91/07/07 18:39:28 dhesi Exp $
+
+# works with Microsoft C 6.00 and Microsoft NMAKE under OS/2
+
+MODEL = C
+DEFINES = -DOS2 -DMSC -DBIG_MEM -DNDEBUG
+
+# be careful with -Ox and MS C 6.00 and use it only if really needed,
+# because it's so buggy
+CC = cl -nologo
+CFLAGS = -A$(MODEL) -J -Zep -G2s -Ocegit $(DEFINES)
+XFLAGS = -Oxaz
+LFLAGS = -A$(MODEL) -Lp -Fb -F 8000
+
+# Object files for zoo
+OBJZ = 	addbfmsc.obj addfname.obj basename.obj comment.obj \
+	crcdefs.obj getfile.obj lzc.obj lzd.obj machine.obj \
+	makelist.obj misc.obj misc2.obj nextfile.obj needed.obj \
+	options.obj parse.obj portable.obj prterror.obj \
+	version.obj zoo.obj zooadd.obj zooadd2.obj zoodel.obj \
+	zooext.obj zoofilt.obj zoolist.obj zoopack.obj \
+	io.obj lzh.obj maketbl.obj maketree.obj huf.obj \
+	encode.obj decode.obj os2.obj
+
+# Object files for fiz
+OBJF = 	fiz.obj addbfmsc.obj portable.obj crcdefs.obj
+
+.c.obj :
+	$(CC) -c $(CFLAGS) $<
+
+all: zoo.exe fiz.exe
+
+zoo.exe: $(OBJZ) zoo.def
+	$(CC) $(LFLAGS) $(OBJZ) zoo.def -o $@
+
+fiz.exe: $(OBJF) fiz.def
+	$(CC) $(LFLAGS) $(OBJF) fiz.def -o $@
+
+clean :
+	del *.obj
+
+#################################################################
+# dependencies
+#################################################################
+
+addfname.obj: options.h various.h zoo.h zoofns.h zooio.h zoomem.h
+basename.obj: assert.h debug.h options.h parse.h various.h zoo.h zoofns.h zooio.h
+comment.obj: errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h
+crcdefs.obj: options.h
+decode.obj: ar.h lzh.h options.h zoo.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+encode.obj: ar.h errors.i lzh.h options.h zoo.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+fiz.obj: options.h portable.h various.h zoo.h zoofns.h zooio.h
+generic.obj: nixmode.i nixtime.i
+getfile.obj: options.h various.h zoo.h zoofns.h zooio.h zoomem.h
+huf.obj: ar.h errors.i lzh.h options.h zoo.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+io.obj: ar.h errors.i lzh.h options.h portable.h zoo.h zooio.h
+lzc.obj: assert.h debug.h lzconst.h options.h various.h zoo.h zoofns.h zooio.h zoomem.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+lzd.obj: assert.h debug.h lzconst.h options.h various.h zoo.h zoofns.h zooio.h zoomem.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+lzh.obj: ar.h errors.i options.h zoo.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+machine.obj: options.h various.h zoo.h zoofns.h zooio.h
+makelist.obj: assert.h debug.h errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h
+maketbl.obj: ar.h lzh.h options.h zoo.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+maketree.obj: ar.h lzh.h options.h zoo.h
+	$(CC) -c $(CFLAGS) $(XFLAGS) $*.c
+misc.obj: errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h
+misc2.obj: errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h zoomem.h
+msdos.obj: errors.i options.h zoo.h zoofns.h zooio.h
+needed.obj: debug.h options.h portable.h various.h zoo.h zoofns.h zooio.h
+nextfile.obj: options.h various.h zoo.h
+options.obj: errors.i options.h various.h zoo.h zoofns.h zooio.h
+parse.obj: assert.h options.h parse.h various.h zoo.h zoofns.h zooio.h
+portable.obj: assert.h debug.h machine.h options.h portable.h various.h zoo.h zoofns.h zooio.h
+prterror.obj: options.h various.h zoofns.h zooio.h
+zoo.obj: errors.i options.h various.h zoo.h zoofns.h zooio.h zoomem.h
+zooadd.obj: debug.h errors.i options.h parse.h portable.h various.h zoo.h zoofns.h zooio.h zoomem.h
+zooadd2.obj: assert.h debug.h errors.i options.h parse.h various.h zoo.h zoofns.h zooio.h
+zoodel.obj: errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h
+zooext.obj: errors.i machine.h options.h parse.h portable.h various.h zoo.h zoofns.h zooio.h
+zoofilt.obj: options.h
+zoolist.obj: errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h zoomem.h
+zoopack.obj: errors.i options.h portable.h various.h zoo.h zoofns.h zooio.h
